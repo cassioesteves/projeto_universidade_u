@@ -1048,3 +1048,107 @@ select
 	
     /*consulta*/
 select * from gasto;
+
+USE UNIVERSIDADE_U;
+
+SELECT * FROM ALUNO;
+
+DESC ALUNO;
+
+ALTER TABLE ALUNO ADD DATA_NASC DATE AFTER CPF;
+
+update aluno set data_nasc ='2001-11-25' where idaluno = 1;
+update aluno set data_nasc ='1985-12-20' where idaluno = 2;
+update aluno set data_nasc ='1993-07-07' where idaluno = 3;
+update aluno set data_nasc ='2010-06-15' where idaluno = 4;
+update aluno set data_nasc ='2005-05-05' where idaluno = 5;
+update aluno set data_nasc ='1964-04-04' where idaluno = 6;
+update aluno set data_nasc ='1973-03-03' where idaluno = 7;
+update aluno set data_nasc ='1991-02-02' where idaluno = 8;
+update aluno set data_nasc ='1989-08-08' where idaluno = 17;
+update aluno set data_nasc ='1990-01-01' where idaluno = 20;
+
+/*Manipulação de datas e horas no MySQL*/
+
+/*
+				RESUMO
+curdate ou currn_date - retorno a data atual
+now - retorna data e hora atuais 
+date_format - formata a projeção da data
+extract - extrai parte de uma determinada data
+date_add - adiciona um intervalo de tempo a data
+datediff - retorna o numero de dias entre duas datas
+period_diff - retorna o numero de meses entre duas datas
+dayofyear - retorna o dia do ano (entre 1 e 366)
+*/
+
+select curdate();
+
+/*versao estendida*/
+select current_date();
+
+/* recuperar a data atual*/
+select curdate();
+select current_date();
+
+/* recuperar a data e hora atuais */
+select now();
+
+/* formatando datas */
+select date_format(curdate(), '%D/%M/%y') as data_formatada;
+select date_format(curdate(), '%D-%M-%y') as data_formatada;
+select date_format(curdate(), '%d-%M-%y') as data_formatada;
+select date_format(curdate(), '%d-%m-%y') as data_formatada;
+select date_format(curdate(), '%d-%m-%Y') as data_formatada;
+/*
+%d - dia do mês ( de 01 até 31)
+%D - dia do mês com sufixo em inglês
+%m - mês (de 01 a 12)
+%M - nome do mês em inglês
+%y - ano (dois dígitos)
+%Y - ano (quatro dígitos)
+*/
+
+/* extrair parte de data */
+select extract(day from '2023-07-01') ;
+select extract(month from '2023-07-01') ;
+select extract(year from '1989-07-07') ;
+/* day, month ou year */
+
+
+/*incluir dia, meses ou ano a uma data pre determinada*/
+select date_add('2023-07-01', interval 10 day) as data_formatada;
+select date_add('2023-07-01', interval 3 month) as data_formatada;
+select date_add('2023-07-01', interval 50 year) as data_formatada;
+
+/*alterar horas , minutos de hora pre determinada*/
+select date_add('2023-07-01 12:00:30', interval 30 second) as hora_formatada;
+select date_add('2023-07-01 12:00:30', interval 5 minute) as hora_formatada;
+select date_add('2023-07-01 12:00:30', interval 3 hour) as hora_formatada;
+select date_add('2023-07-01 12:00:30', interval 00003 microsecond) as hora_formatada;
+
+/*hora negativa*/
+select date_add('2023-07-01 12:00:30', interval -3 hour) as hora_formatada;
+
+/* adicionando intervalos de tempo as datas */
+select now() as data_hora_atuais, date_add(now(), interval 5 day) as data_hora_ajustada;
+/* second, minute, hour, day, month, year */
+
+/* calculo de dias entre datas */
+
+/* calculo de dias entre datas */
+select 
+    '1989-08-08' as data_nascimento, 
+    curdate() as data_atual, 
+	datediff('1989-08-08', curdate()) as diferenca_dias, 
+    floor(datediff(curdate(), '1989-08-08') / 365) as idade_aproximada;
+    
+/* calculo de meses entre datas */
+select period_diff('199504', '199402') as diferenca_meses;
+    
+/* dia do ano, retorna dia do ano */
+select dayofyear('2015-07-12') as dia_do_ano;
+select dayofyear(now()) as dia_do_ano;
+
+
+
