@@ -1045,3 +1045,6 @@ select
         gasto
 	where
         idgasto = (select idgasto from gasto where ano = 2019 and tipo = 'realizado')) as resultado_dez;
+	
+    /*consulta*/
+select * from gasto;
