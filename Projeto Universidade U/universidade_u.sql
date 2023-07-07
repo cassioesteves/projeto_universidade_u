@@ -1150,5 +1150,40 @@ select period_diff('199504', '199402') as diferenca_meses;
 select dayofyear('2015-07-12') as dia_do_ano;
 select dayofyear(now()) as dia_do_ano;
 
+use universidade_u;
 
+-- timestamp (marca temporal) início à partir da meia-noite do dia 01/01/1970.
+/*https://pt.wikipedia.org/wiki/Marca_temporal*/
 
+/*calcular a idade com base na data de nascimento*/
+
+select
+	timestampdiff(YEAR,'1989-08-08', curdate()) as idade;
+select
+	timestampdiff(YEAR,'1993-07-07', curdate()) as idade;  
+    
+select 
+	data_nasc, 
+    curdate() as data_atual,
+    timestampdiff(YEAR, data_nasc, curdate()) as idade_dinamica
+from 
+	aluno;
+    
+alter table aluno drop idade;
+
+select * from aluno;
+
+use universidade_u;
+
+-
+
+update aluno set data_nasc = '2005-07-06'
+where idaluno = 5;
+
+select * from aluno where idaluno = 5;
+
+/*Refactoring da data de inscrição no curso e valor pago*/
+
+select * from aluno;
+
+elect * from aluno_curso;
