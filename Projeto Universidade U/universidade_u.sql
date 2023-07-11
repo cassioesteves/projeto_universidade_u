@@ -1186,4 +1186,83 @@ select * from aluno where idaluno = 5;
 
 select * from aluno;
 
-elect * from aluno_curso;
+select * from aluno_curso;
+
+alter table aluno_curso add DATA_INSCRICAO_CURSO date;
+alter table aluno_curso add VALOR_PAGO_CURSO float(10,2);
+
+/* pegar os dados da tabela aluno e cadastrar manualmente na tabela aluno_curso */
+
+/* query de update com uma subquery para recuperar os dados */
+
+select idaluno, data_inscricao_curso, valor_pago_curso 
+from aluno
+where idaluno = 1;
+
+/* pegar os dados da tabela aluno e cadastrar manualmente na tabela aluno_curso */
+
+/* query de update com uma subquery para recuperar os dados */
+
+update
+    aluno_curso
+set
+    data_inscricao_curso = (select data_inscricao_curso from aluno where idaluno = 3),
+    valor_pago_curso = (select valor_pago_curso from aluno where idaluno = 3)
+where
+    fk_idaluno = 3;
+/*1
+2
+5
+8*/
+select distinct fk_idaluno from aluno_curso;
+
+alter table aluno drop column data_inscricao_curso;
+alter table aluno drop column valor_pago_curso;
+
+select * from aluno;
+
+select * from aluno_curso;
+
+/* trabalhando com valores default em uma coluna*/
+
+alter table aluno modify column ativo_sn int default 1;
+
+/*ATIVO_SN COMO DEFAULT 1 - SEM DEFINIR OS PARAMETROS, processo automatico pelo SGBD*/
+insert into aluno(nome, sexo, cpf, data_nasc, email, telefone)
+	values('DELTRANO', 'M', '123.123.123.45', '2000-01.06','DELTRANO@YMAIL.COM','95 91234-1234');
+    
+/*ATIVO_SN COMO DEFAULT -  DEFININDO OS PARAMETROS MANUALMENTE, subscrever O DEFAULT*/
+insert into aluno(nome, sexo, cpf, data_nasc, email, telefone, ativo_sn)
+	values('ZUNIQUE', 'M', '456.456.456.78', '1978-05-25','ZUNIQUE@TMAIL.COM','88 94567-4567', 0);
+
+
+/* trabalhando com valores curdate em uma coluna
+CONSTRAINT QUE PERMITE ADICIONAR UM VALOR PADRAO PARA UMA COLUNA CASO A INFORMAÇÃO NAO SEJA PASSADA NO INSERT
+
+OTIMIZA AS OPERAÇÕES DE INSERT QUANDO UMA DETERMINADA COLUNA DA TABELA GERALMENTE RECEBE O MESMO VALOR
+
+SE OS VALORES NAO FOR INFORMADO NO INSERT O SGBD DEFINE O DEFAULT, SE INFORMAR NO INSERT ELE SOBREPÕE O DEFAULT
+*/
+
+/*
+current_timestamp - é uma variavel que guarda a hora atual da inserção no BD.
+curdate - não pode ser usado como variavel 
+*/
+
+select * from curso;
+select * from aluno_curso;
+alter table aluno_curso modify column DATA_INSCRICAO_CURSO datetime default current_timestamp;
+/*
+insert into aluno_curso(FK_IDALUNO, FK_IDCURSO, DATA_INSCRICAO_CURSO, VALOR_PAGO_CURSO) 
+	values('21', '3', curdate(), '790.50')
+*/ /*NOVAS DEFINICOES SEM DEFINIR A DATA_INSCRICAO_CURSO EO curdate()*/
+
+insert into aluno_curso(FK_IDALUNO, FK_IDCURSO, VALOR_PAGO_CURSO) 
+	values('21', '3', '790.50')
+    
+/*PRIMARY KEY SIMPLES E PRIMARY KEY COMPOSTA
+			
+            SIMPLES -> 1 COLUNA
+PRIMARY KEY 
+			COMPOSTA ->	2 OU MAIS COLUNAS
+*/
