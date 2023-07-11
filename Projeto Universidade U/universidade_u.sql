@@ -1260,9 +1260,142 @@ insert into aluno_curso(FK_IDALUNO, FK_IDCURSO, DATA_INSCRICAO_CURSO, VALOR_PAGO
 insert into aluno_curso(FK_IDALUNO, FK_IDCURSO, VALOR_PAGO_CURSO) 
 	values('21', '3', '790.50')
     
-/*PRIMARY KEY SIMPLES E PRIMARY KEY COMPOSTA
+/*
+PRIMARY KEY SIMPLES E PRIMARY KEY COMPOSTA
 			
             SIMPLES -> 1 COLUNA
 PRIMARY KEY 
 			COMPOSTA ->	2 OU MAIS COLUNAS
+            
+CHAVES PODE SER NATUAL OU ARTIFICIAL. 
+NATURAL - TEM RELACAO COM O REGISTRO
+ARTIFICIAL - NAO TEM RELACAO COM O REGISTRO
 */
+/*modify column*/
+alter table aluno_curso modify column FK_IDALUNO INT not null;
+alter table aluno_curso modify column FK_IDCURSO INT not null;
+    
+select * from aluno_curso;
+desc aluno_curso;
+
+ALTER TABLE ALUNO_CURSO DROP COLUMN ID_ALUNOCURSO;
+
+SELECT * FROM ALUNO_CURSO;
+
+ALTER table aluno_curso	add constraint pk_aluno_curso primary key (FK_IDALUNO, FK_IDCURSO, DATA_INSCRICAO_CURSO);
+
+/*CRIAR A TABELA PROJETO FUNCIONARIO*/
+
+CREATE TABLE PROJETO_FUNCIONARIO (
+    codigo_projeto int,
+    matricula_funcionario int,
+    nome_projeto varchar(100) not null,
+    nome_funcionario varchar(50) not null,
+    funcao_funcionario varchar(50) not null,
+    telefone_funcionario varchar(20),
+    data_criacao_projeto datetime default current_timestamp,
+    horas_estimadas int not null,
+    horas_realizadas int,
+    PRIMARY KEY (codigo_projeto, matricula_funcionario)
+);
+ 
+alter table PROJETO_FUNCIONARIO add constraint PK_PROJETO_FUNCIONARIO primary key (codigo_projeto, matricula_funcionario);
+
+desc PROJETO_FUNCIONARIO;
+ 
+insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
+funcao_funcionario,telefone_funcionario, horas_estimadas) 
+values(1,100,'Matricula Online','Ana Maria','Analista de Atendimento','11 91234-5678', 200),
+	(1,110,'Matricula Online','Fatima','Cordenador de Atendimento','11 97182-7182', 100),
+	(1,30,'Matricula Online','João Olive','Gerente Comercial','11 98293-8293', 300),
+	(1,80,'Matricula Online','Jimmy Dev','Desenvolvedor Full Stack','11 98293-8293', 500);
+
+insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
+funcao_funcionario,telefone_funcionario, horas_estimadas) values(2,221,'Economia de Papel','Laura','Analista de Qualidade','',500);
+
+values(3,221,'Nota Online','Carlos Patron','Analista Administrativo', '11 1020-3040',150);
+
+insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
+funcao_funcionario,horas_estimadas) 
+values(3,180,'Nota Online','Luiz Del Silva','Analista Administrativo Junior',80),
+	(3,500,'Nota Online','Julio Cezar','Jovem Aprendiz',150);
+    
+/* anomalia de inserção de registro*/
+/*nesse modelo pode ocorrer erros de digitação e duplicação de dados, data e criação do projeto sem muda a cada insert*/
+select * from PROJETO_FUNCIONARIO;
+
+insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
+funcao_funcionario,horas_estimadas) values(2,353,'Economia de Papel','Malaquias','Analista Financeiro',25);
+
+/* anomalia de exclusao de registro - (perder registros importantes)*/
+
+/*view*/
+select * from PROJETO_FUNCIONARIO where codigo_projeto = 3 and matricula_funcionario = 221;
+/*delete*/
+delete from PROJETO_FUNCIONARIO where codigo_projeto = 3 and matricula_funcionario = 221;
+
+update 
+	PROJETO_FUNCIONARIO 
+set 
+	nome_projeto = 'Inscrição Online'
+where 
+	codigo_projeto = 1;
+    
+/*NORMALIZAÇÃO DE BANCO DE DADOS*/
+/*REGRAS DA 2FN
+
+-A TABELA PRECISA ESTAR NA PRIMEIRA FORMA NORMAL
+TER UMA IDENTIFICACAO UNICA PARA CADA REGISTRO ATRIBUTOS COM VALORES ATOMICOS
+
+-NAO POSSUIR DEPENDENCIAS PARCIAIS
+TODOS OS ATRIBUTOS NAO CHAVE DEVEM SER TOTAL E FUNCIONAMENTE DEPENDENTES DA CHAVE PRIMARIA.alter
+
+TABELA NORMALIZADA NA SEGUNDA FORMA NORMAL
+
+*/
+select * from PROJETO_FUNCIONARIO;
+
+-- EX.:
+/*OS ATRIBUTOS/ COLUNAS NAO CHAVES*/
+nome_projeto, nome_funcionario, telefone_funcionario
+
+/*QUAIS SAO OS ATRIBUTOS/COLUNAS CHAVES*/
+codigo_projeto, matricula_funcionario
+
+-- 2FN
+-- 'Refactoring das tabelas projeto, funcionario e projeto_funcionario atendendo a 2FN'
+
+/*REFACTORING DAS TABELAS MODELAGEM FISICA PARA ATENTER A FORMA NORMAL*/
+
+CREATE TABLE PROJETO (
+    idcodigo int auto_increment PRIMARY KEY,
+    data_criacao datetime default current_timestamp,
+    nome varchar(100) not null,
+    constraint pk_projeto primary key (idcodigo)
+);
+
+CREATE TABLE FUNCIONARIO (
+    idmatricula int auto_increment PRIMARY KEY,
+    nome varchar(50) not null,
+    funcao varchar(50) not null,
+    telefone varchar(20),
+    constraint pk_funcionario primary key (idmatricula)
+);
+
+CREATE TABLE PROJETO_FUNCIONARIO (
+    fk_idcodigo int,
+    fk_idmatricula int,
+    horas_estimadas int not null,
+    horas_realizadas int,
+    PRIMARY KEY (fk_idcodigo, fk_idmatricula)
+);
+
+-- ALTER table aluno_curso	add constraint pk_aluno_curso primary key (FK_IDALUNO, FK_IDCURSO, DATA_INSCRICAO_CURSO);
+
+ALTER TABLE PROJETO_FUNCIONARIO ADD CONSTRAINT fk_idcodigo
+    FOREIGN KEY (fk_idcodigo)
+    REFERENCES PROJETO (idcodigo);
+ 
+ALTER TABLE PROJETO_FUNCIONARIO ADD CONSTRAINT fk_idmatricula
+    FOREIGN KEY (fk_idmatricula)
+    REFERENCES FUNCIONARIO (idmatricula);
