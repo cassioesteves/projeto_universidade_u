@@ -1309,7 +1309,12 @@ values(1,100,'Matricula Online','Ana Maria','Analista de Atendimento','11 91234-
 	(1,110,'Matricula Online','Fatima','Cordenador de Atendimento','11 97182-7182', 100),
 	(1,30,'Matricula Online','João Olive','Gerente Comercial','11 98293-8293', 300),
 	(1,80,'Matricula Online','Jimmy Dev','Desenvolvedor Full Stack','11 98293-8293', 500);
-
+    
+/*duplicar dados*/
+insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
+funcao_funcionario,telefone_funcionario, horas_estimadas) 
+	values (3,80,'Nota Online','Jimmy Dev','Desenvolvedor Full Stack','11 98293-8293', 400);
+    
 insert into PROJETO_FUNCIONARIO(codigo_projeto,matricula_funcionario,nome_projeto,nome_funcionario, 
 funcao_funcionario,telefone_funcionario, horas_estimadas) values(2,221,'Economia de Papel','Laura','Analista de Qualidade','',500);
 
@@ -1368,34 +1373,107 @@ codigo_projeto, matricula_funcionario
 /*REFACTORING DAS TABELAS MODELAGEM FISICA PARA ATENTER A FORMA NORMAL*/
 
 CREATE TABLE PROJETO (
-    idcodigo int auto_increment PRIMARY KEY,
+    idcodigo int auto_increment,
     data_criacao datetime default current_timestamp,
     nome varchar(100) not null,
     constraint pk_projeto primary key (idcodigo)
 );
 
+/* alterando a posicao na coluna nome antes data_criacao*/
+alter table projeto modify column nome varchar(100) not null after idcodigo;
+
 CREATE TABLE FUNCIONARIO (
-    idmatricula int auto_increment PRIMARY KEY,
+    idmatricula int auto_increment,
     nome varchar(50) not null,
     funcao varchar(50) not null,
     telefone varchar(20),
     constraint pk_funcionario primary key (idmatricula)
 );
 
-CREATE TABLE PROJETO_FUNCIONARIO (
+CREATE TABLE PROJETO_FUNCIONARIO2 (
     fk_idcodigo int,
     fk_idmatricula int,
     horas_estimadas int not null,
     horas_realizadas int,
-    PRIMARY KEY (fk_idcodigo, fk_idmatricula)
+    constraint pk_PROJETO_FUNCIONARIO PRIMARY KEY (fk_idcodigo, fk_idmatricula)
 );
 
 -- ALTER table aluno_curso	add constraint pk_aluno_curso primary key (FK_IDALUNO, FK_IDCURSO, DATA_INSCRICAO_CURSO);
 
-ALTER TABLE PROJETO_FUNCIONARIO ADD CONSTRAINT fk_idcodigo
+ALTER TABLE PROJETO_FUNCIONARIO2 ADD CONSTRAINT
     FOREIGN KEY (fk_idcodigo)
     REFERENCES PROJETO (idcodigo);
  
-ALTER TABLE PROJETO_FUNCIONARIO ADD CONSTRAINT fk_idmatricula
+ALTER TABLE PROJETO_FUNCIONARIO2 ADD CONSTRAINT
     FOREIGN KEY (fk_idmatricula)
     REFERENCES FUNCIONARIO (idmatricula);
+
+use universidade_u;
+
+desc projeto;
+desc funcionario;
+desc projeto_funcionario2;
+
+select * from PROJETO;
+select * from FUNCIONARIO;
+select * from PROJETO_FUNCIONARIO;
+select * from PROJETO_FUNCIONARIO2;
+
+select
+	matricula_funcionario, nome_funcionario, funcao_funcionario,telefone_funcionario
+from
+	PROJETO_FUNCIONARIO;
+    
+    
+-- selecionando apenas os dados distinto
+select distinct
+	matricula_funcionario, nome_funcionario, funcao_funcionario,telefone_funcionario
+from
+	PROJETO_FUNCIONARIO;
+    
+-- migrando os dados da tabla FUNCIONARIO.
+-- insert com select, query para migracao de dados funcionarios.
+insert into FUNCIONARIO(idmatricula, nome, funcao, telefone)
+select distinct
+	matricula_funcionario, nome_funcionario, funcao_funcionario,telefone_funcionario
+from
+	PROJETO_FUNCIONARIO;
+
+-- migrando os dados da tabla projeto.
+-- insert into projeto (idcodigo, nome, data_criacao)
+select 
+	codigo_projeto, nome_projeto, data_criacao_projeto
+from
+	PROJETO_FUNCIONARIO;
+    
+insert into projeto(idcodigo, nome, data_criacao)    
+select distinct
+	codigo_projeto, nome_projeto, data_criacao_projeto
+from
+	PROJETO_FUNCIONARIO;
+
+select * from projeto_funcionario where codigo_projeto = 1 order by data_criacao_projeto limit 1;
+
+-- update data_criacao_projeto para setar os dados de criacao mais antigo, falha para migra os dados completo.
+update projeto_funcionario set data_criacao_projeto = '2023-07-11 00:31:59' where codigo_projeto = 2;
+update projeto_funcionario set data_criacao_projeto = '2023-07-11 00:41:59' where codigo_projeto = 2;
+update projeto_funcionario set data_criacao_projeto = '2023-07-11 19:12:28' where codigo_projeto = 3;
+
+-- recuperar dos dados da tabela PROJETO_FUNCIONARIO, não é necessario destinção
+insert into PROJETO_FUNCIONARIO2(fk_idcodigo,fk_idmatricula, horas_estimadas,horas_realizadas)
+select
+	codigo_projeto, matricula_funcionario, horas_estimadas,horas_realizadas
+from 
+	PROJETO_FUNCIONARIO;
+
+select * from PROJETO;
+select * from FUNCIONARIO;
+select * from PROJETO_FUNCIONARIO2;
+
+-- eliminar a tabela antiga
+drop table PROJETO_FUNCIONARIO;
+
+-- renomear a tabela PROJETO_FUNCIONARIO2 para PROJETO_FUNCIONARIO
+rename table PROJETO_FUNCIONARIO2 to PROJETO_FUNCIONARIO;
+
+desc PROJETO_FUNCIONARIO2;
