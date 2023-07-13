@@ -1501,5 +1501,155 @@ ALTER TABLE DISCIPLINA ADD CONSTRAINT fk_curso_disciplina
 desc curso;
 desc DISCIPLINA;
 
--- 'Criando a tabela "disciplina" - Modelagem Conceitual, Lógica e Física'
+-- 'Criado a tabela "disciplina" - Modelagem Conceitual, Lógica e Física'
 -- 78. Analisando as anomalias de inserção, atualização e remoção de registros
+
+select * from DISCIPLINA;
+select * from curso;
+
+insert into DISCIPLINA (descricao, carga_horaria, codigo_professor, nome_professor, email_professor, fk_idcurso)values
+		('SSMS', 50, 1020, 'Noah', 'noah@universidadeu.com', 1),
+		('Data Science', 80, 980, 'Caleb', 'caleb@universidadeu.com', 4),
+		('Django', 35, 980, 'Simas', 'simas@universidadeu.com', 4),
+		('Flask', 15, 980, 'Ninrode', 'ninrode@universidadeu.com', 4),
+		('Fullstack', 120, 1098, 'Zion', 'zion@universidadeu.com', 5),
+		('Back End' , 90, 1054, 'Efraim', 'efraim@universidadeu.com', 5),
+		('Front End', 75, 780, 'Salatiel', 'salatiel@universidadeu.com', 5);
+
+insert into DISCIPLINA (descricao, carga_horaria, codigo_professor, nome_professor, email_professor, fk_idcurso)values
+		('MYSQL e Workbench', 10, 1020, 'Enoque', 'enoque@universidadeu.com', 3),
+		('Manipulando BD MySQL' , 15, 1020, 'Enoque', 'enoque@universidadeu.com', 3);
+        
+insert into DISCIPLINA (descricao, carga_horaria, codigo_professor, nome_professor, email_professor, fk_idcurso)values
+		('Manipulando BD MySQL' , 15, 1020, 'Enoque', 'enoque@teste.com', 3);
+        
+delete from DISCIPLINA where codigo_professor = 1020;
+select * from DISCIPLINA where codigo_professor = 1020;
+
+
+::DISCIPLINA
+
+'1', 'CURSO DB SQL SERVER'
+'SSMS'
+'Segurança no SQL Server'	
+
+'2', 'CURSO MONGODB'
+'O que é NoSQL' 
+'Curso mongo db com PHP'
+'Conectando o MongoDB com o PHP'
+
+'3', 'CURSO DB MYSQL'
+'MYSQL e Workbench'
+'Manipulando o banco de dados'
+'Gerenciando as tabelas do banco de dados'
+'Manutenção dos dados nas tabelas'
+'Consultando os dados'
+
+
+'4', 'PROGRAMACAO PYTHON'
+'Data Science'
+'Machine Learning'
+'Django'
+'Flask'
+
+# IDCURSO, DESCRICAO
+'5', 'DESENVOLVIMENTO WEB'
+'Front End'
+'Back End' 
+'Fullstack'
+
+::CURSO
+# IDCURSO, DESCRICAO
+'1', 'CURSO DB SQL SERVER'
+'2', 'CURSO MONGODB'
+'3', 'CURSO DB MYSQL'
+'4', 'PROGRAMACAO PYTHON'
+'5', 'DESENVOLVIMENTO WEB'
+
+/* anomalias de inserção (redundância de dados, dados inconsistentes) */
+insert into disciplina(
+    descricao, carga_horaria, codigo_professor, 
+    nome_professor, email_professor, fk_idcurso
+)values(
+	'EJS', 3, 100,
+    'Jorge', 'jorge1010@teste.com.br', 1
+);
+
+/* anomalias de exclusão (perder registros importantes) */
+delete from disciplina where codigo_professor = 120 and descricao = 'Express';
+select * from disciplina where codigo_professor = 120 and descricao = 'Express';
+
+/*anomalias de atualização (informações inconsistentes, redundância no update)*/
+update disciplina set nome_professor = 'George' where codigo_professor = 100;
+
+-- 80. 3FN - Testando as dependências transitivas e corrigindo as anomalias
+
+use universidade_u;
+
+select * from DISCIPLINA;
+select * from curso;
+
+select * from PROFESSOR;
+desc PROFESSOR;
+
+CREATE TABLE PROFESSOR (
+    idprofessor int auto_increment,
+    nome varchar(50) not null,
+    email varchar(100),
+    constraint pk_professor primary key(idprofessor)
+);
+
+-- add sera apos a migra para 3 forma nominal 3FN e migrao dos dados das tabelas disciplina_professor
+ALTER TABLE DISCIPLINA ADD CONSTRAINT fk_disciplina_professor
+    FOREIGN KEY (fk_idprofessor)
+    REFERENCES PROFESSOR (idprofessor);
+
+-- migra dados de uma tabela para outra usanto insert into mesclado com select distinct (dados diferentes)
+insert into professor(idprofessor, nome, email)
+select distinct codigo_professor, nome_professor, email_professor
+from DISCIPLINA;
+
+/*
+81. Refactoring da tabela "disciplina" parte 1
+82. Refactoring da tabela "disciplina" parte 2
+*/
+select
+	codigo_professor,
+    count(*) as repeticoes,
+    nome_professor, 
+    email_professor
+from
+	DISCIPLINA
+group by
+	codigo_professor;
+
+select codigo_professor, nome_professor 
+from disciplina
+where codigo_professor = 980;
+
+-- update
+update disciplina
+set codigo_professor = 1000
+where nome_professor = 'Noah'
+
+desc disciplina
+
+select * from DISCIPLINA;
+select * from CURSO;
+select * from PROFESSOR;
+
+-- excluir colunas de uma tabela
+alter table disciplina drop column nome_professor;
+alter table disciplina drop column email_professor;
+
+-- renomear uma colunas de uma tabela
+alter table disciplina rename column codigo_professor to fk_idprofessor;
+
+ALTER TABLE DISCIPLINA ADD CONSTRAINT fk_disciplina_professor
+    FOREIGN KEY (fk_idprofessor)
+    REFERENCES PROFESSOR (idprofessor);
+desc disciplina
+
+-- '3FN-Refactoring da tabela "disciplina" e criação da tabela "professor" migracao de dados das tabelas disciplina_professor'
+
+ 
