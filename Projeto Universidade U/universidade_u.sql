@@ -1468,7 +1468,7 @@ from
 
 select * from PROJETO;
 select * from FUNCIONARIO;
-select * from PROJETO_FUNCIONARIO2;
+select * from PROJETO_FUNCIONARIO;
 
 -- eliminar a tabela antiga
 drop table PROJETO_FUNCIONARIO;
@@ -1476,4 +1476,30 @@ drop table PROJETO_FUNCIONARIO;
 -- renomear a tabela PROJETO_FUNCIONARIO2 para PROJETO_FUNCIONARIO
 rename table PROJETO_FUNCIONARIO2 to PROJETO_FUNCIONARIO;
 
-desc PROJETO_FUNCIONARIO2;
+desc PROJETO_FUNCIONARIO;
+
+use universidade_u;
+
+/*adicionando a tabela disciplina 3fn*/
+-- 'Criando a tabela "disciplina" - Modelagem Conceitual, Lógica e Física'
+
+CREATE TABLE DISCIPLINA (
+    iddisciplina int auto_increment,
+    descricao varchar(50) not null,
+    carga_horaria int,
+    codigo_professor int,
+    nome_professor varchar(50),
+    email_professor varchar(100),
+    fk_idcurso INT,
+    constraint pk_iddisciplina primary key (iddisciplina)
+);
+ 
+ALTER TABLE DISCIPLINA ADD CONSTRAINT fk_curso_disciplina
+    FOREIGN KEY (fk_idcurso)
+    REFERENCES CURSO (IDCURSO);
+    
+desc curso;
+desc DISCIPLINA;
+
+-- 'Criando a tabela "disciplina" - Modelagem Conceitual, Lógica e Física'
+-- 78. Analisando as anomalias de inserção, atualização e remoção de registros
