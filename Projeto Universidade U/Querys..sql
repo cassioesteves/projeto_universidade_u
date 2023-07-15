@@ -9,27 +9,29 @@ use universidade_u;
 show tables;
 
 show create table aluno;
-CREATE TABLE `aluno` (
-  `sexo` char(1) DEFAULT NULL,
-  `email` varchar(150) DEFAULT NULL,
-  `ativo_sn` int(11) DEFAULT '1',
-  `nome` varchar(25) DEFAULT NULL,
-  `cpf` varchar(14) DEFAULT NULL,
-  `idaluno` int(11) NOT NULL AUTO_INCREMENT,
-  `data_nascimento` date DEFAULT NULL,
-  PRIMARY KEY (`idaluno`),
-  UNIQUE KEY `uc_aluno_cpf` (`cpf`),
-  UNIQUE KEY `uc_aluno_email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
+aluno, CREATE TABLE `aluno` (
+  `IDALUNO` int NOT NULL AUTO_INCREMENT,
+  `NOME` varchar(25) NOT NULL,
+  `SEXO` char(1) NOT NULL,
+  `CPF` varchar(14) NOT NULL,
+  `DATA_NASC` date DEFAULT NULL,
+  `EMAIL` varchar(150) NOT NULL,
+  `TELEFONE` varchar(20) DEFAULT NULL,
+  `ativo_sn` int DEFAULT '1',
+  PRIMARY KEY (`IDALUNO`),
+  UNIQUE KEY `uc_aluno_cpf` (`CPF`),
+  UNIQUE KEY `uc_aluno_email` (`EMAIL`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 show create table telefone;
 
-CREATE TABLE `telefone` (
+telefone, CREATE TABLE `telefone` (
+  `IDTELEFONE` int NOT NULL AUTO_INCREMENT,
   `numero` varchar(20) NOT NULL,
-  `idtelefone` int(11) NOT NULL AUTO_INCREMENT,
-  `fk_idaluno` int(11) NOT NULL,
-  `tipo` enum('res','com','cel') NOT NULL,
-  PRIMARY KEY (`idtelefone`),
-  KEY `fk_aluno_telefone` (`fk_idaluno`),
-  CONSTRAINT `fk_aluno_telefone` FOREIGN KEY (`fk_idaluno`) REFERENCES `aluno` (`idaluno`)
+  `tipo` enum('CEL','RES','COM') NOT NULL,
+  `FK_IDALUNO` int NOT NULL,
+  PRIMARY KEY (`IDTELEFONE`),
+  KEY `FK_ALUNO_TELEFONE` (`FK_IDALUNO`),
+  CONSTRAINT `FK_ALUNO_TELEFONE` FOREIGN KEY (`FK_IDALUNO`) REFERENCES `aluno` (`IDALUNO`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
