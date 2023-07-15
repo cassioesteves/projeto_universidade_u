@@ -1,7 +1,7 @@
 CREATE DATABASE UNIVERSIDADE_U
 USE UNIVERSIDADE_U
 
-DROP DATABASE UNIVERSIDADE_U
+/*DROP DATABASE UNIVERSIDADE_U*/
 
 SHOW DATABASES;
 SHOW tables
@@ -1652,4 +1652,134 @@ desc disciplina
 
 -- '3FN-Refactoring da tabela "disciplina" e criação da tabela "professor" migracao de dados das tabelas disciplina_professor'
 
- 
+desc aluno;
+
+-- trabalhando com auto relacionamento na tabela funcionario
+
+select * from funcionario;
+desc funcionario;
+
+-- fk_idmatricula_supervisor
+alter table funcionario add column fk_idmatricula_supervisor int;
+
+update funcionario set fk_idmatricula_supervisor = 110 where idmatricula = 100;
+update funcionario set fk_idmatricula_supervisor = 30 where idmatricula in (100,110);
+ ALTER TABLE FUNCIONARIO ADD CONSTRAINT fk_funcionario_supervisor
+    FOREIGN KEY (fk_idmatricula_supervisor)
+    REFERENCES FUNCIONARIO (idmatricula);
+    
+-- fk_idmatricula_diretor
+update funcionario set fk_idmatricula_diretor = 1
+
+alter table funcionario add column fk_idmatricula_diretor int;
+
+-- modificando a coluna fk_idmatricula_diretor para receber como default o diretor matricula 1
+alter table funcionario modify column fk_idmatricula_diretor int default 1;
+
+ALTER TABLE FUNCIONARIO ADD CONSTRAINT fk_idmatricula_diretor
+FOREIGN KEY (fk_idmatricula_diretor)
+REFERENCES FUNCIONARIO (idmatricula);
+
+update funcionario set idmatricula = 1 where idmatricula = 551;
+
+update funcionario set funcao 'Gerente Comercial' 
+des
+insert into funcionario (nome, funcao, telefone)
+values ('Deuteronômio', 'Diretor', '0800 123456');
+
+-- manipulando dados
+insert into funcionario (nome, funcao, telefone)
+values ('Pedro', 'Gerente de TI', '11 998743216');
+update funcionario set fk_idmatricula_supervisor = 552 where idmatricula = 80;
+update funcionario set fk_idmatricula_supervisor = null where idmatricula = 552;
+
+insert into funcionario (nome, funcao, telefone)
+values ('Mustafa', 'Gerente Financeiro', '11 911112222');
+update funcionario set fk_idmatricula_supervisor = 553 where idmatricula = 353;
+
+select * from funcionario;
+desc funcionario;
+
+select * from funcionario where fk_idmatricula_supervisor = 30;
+
+-- 87. Zerando os registros de uma tabela com Truncate
+
+use universidade_u;
+
+select * from gasto;
+
+-- delete (deleta apenas os insert, mantendo os historico de registro)
+-- drop table / create table (deleta a tabela inteira)
+-- truncate table (deleta todos os insert e registro)
+
+-- truncate table gasto;
+
+-- truncando a table onde está a foreign key
+-- truncate table telefone;
+
+select * from telefone;
+desc telefone;
+
+-- auto increment, como funciona na visao SGBD nas tabelas usada como exemplo
+select max(idtelefone)+ 1 from telefone;
+select max(idaluno)+ 1 from aluno;
+
+-- truncando a tabela referência
+select * from aluno;
+
+-- desabilita as integridade entre tabelas referencias
+set foreign_key_checks = 0;
+
+-- habilita as integridade entre tabelas referencias
+set foreign_key_checks = 1;
+truncate table aluno;
+truncate table curso;
+
+-- auto_increment (valor padrão é 1);
+
+/* EX
+select * from telefone;
+
+insert into telefone(numero,fk_idaluno, tipo)
+values('11 3333-4444', 1, 'res');
+
+alter table telefone auto_increment = 353;
+
+select max(idtelefone) + 1 from telefone;
+
+select * from aluno;
+
+insert into aluno(sexo, email, ativo_sn, nome, cpf, data_nascimento)
+values('M', 'jorge@teste.com.br', 1, 'Jorge', '222.222.222-98', '1989-01-06');
+*/
+
+-- 89. Modificando a ordem de uma coluna na tabela
+
+select * from aluno;
+desc aluno;
+show create table aluno;
+
+-- mover a coluna para a primeira posição ex
+alter table aluno modify column NOME varchar(25) NOT NULL first;
+alter table aluno modify column IDALUNO int NOT NULL AUTO_INCREMENT first;
+
+-- alterar a posição de uma coluna antes ou depois
+alter table aluno modify column EMAIL varchar(150) NOT NULL after telefone;
+alter table aluno modify column TELEFONE varchar(20) DEFAULT NULL after EMAIL;
+
+-- alterar a posição de uma coluna final, informar after e nome_ultima_tabela
+
+aluno, CREATE TABLE `aluno` (
+  `IDALUNO` int NOT NULL AUTO_INCREMENT,
+  `NOME` varchar(25) NOT NULL,
+  `SEXO` char(1) NOT NULL,
+  `CPF` varchar(14) NOT NULL,
+  `DATA_NASC` date DEFAULT NULL,
+  `EMAIL` varchar(150) NOT NULL,
+  `TELEFONE` varchar(20) DEFAULT NULL,
+  `ativo_sn` int DEFAULT '1',
+  PRIMARY KEY (`IDALUNO`),
+  UNIQUE KEY `uc_aluno_cpf` (`CPF`),
+  UNIQUE KEY `uc_aluno_email` (`EMAIL`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+
