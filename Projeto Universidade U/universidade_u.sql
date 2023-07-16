@@ -1783,3 +1783,9 @@ aluno, CREATE TABLE `aluno` (
   UNIQUE KEY `uc_aluno_email` (`EMAIL`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+-- 90. Populando tabelas com massas de dados de testes
+www.generatedata.com
+
+select * from professor;
+desc professor
+
